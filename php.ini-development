@@ -1951,7 +1951,6 @@ ldap.max_links = -1
 ; End:
 
 [apcu]
-extension = apcu.so
 apc.enabled=1
 apc.enable_cli=1
 apc.mmap_file_mask=/tmp/apc.XXXXXX
