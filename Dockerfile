@@ -161,6 +161,7 @@ RUN set -ex \
 COPY --from=build-env /usr/local/lib/php/extensions/no-debug-non-zts-20180731 /usr/local/lib/php/extensions/no-debug-non-zts-20180731
 COPY --from=build-env /usr/local/etc/php/conf.d/* /usr/local/etc/php/conf.d/
 COPY --from=build-env /usr/local/bin/composer /usr/local/bin/composer
+COPY --from=build-env /usr/local/bin/dockerize /usr/local/bin/dockerize
 COPY --from=build-env /etc/localtime /etc/localtime
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY php.ini-development /usr/local/etc/php/php.ini
