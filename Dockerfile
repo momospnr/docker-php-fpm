@@ -23,7 +23,8 @@ ENV APP_DEPS \
   yarn \
   git \
   unzip \
-  openssl
+  openssl \
+  bash
 
 ENV PHP_EXT \
   json \
@@ -142,7 +143,8 @@ ENV APP_DEPS \
   yarn \
   git \
   unzip \
-  openssl
+  openssl \
+  bash
 
 ENV BUILD_DEPS \
   build-base \
@@ -197,7 +199,8 @@ ENV APP_DEPS \
   yarn \
   git \
   unzip \
-  openssl
+  openssl \
+  bash
 
 RUN set -ex \
   && apk update \
