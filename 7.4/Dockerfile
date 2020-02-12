@@ -1,4 +1,4 @@
-FROM php:7.3.11-fpm-alpine3.10 AS build-env
+FROM php:7.4.2-fpm-alpine3.11 AS build-env
 
 LABEL maintainer="momospnr"
 
@@ -54,9 +54,9 @@ ENV PHP_EXT \
   sysvsem \
   sysvshm \
   tokenizer \
-  wddx \
   xmlwriter \
-  xmlrpc
+  xmlrpc \
+  gd
 
 ENV PECL_EXT \
   xdebug \
@@ -73,6 +73,7 @@ ENV BUILD_DEPS \
   libpng-dev \
   gettext-dev \
   mysql-dev \
+  oniguruma-dev \
   pcre-dev \
   libc-dev \
   jpeg-dev \
@@ -103,8 +104,6 @@ RUN set -ex \
   && docker-php-ext-install \
   ${PHP_EXT} \
   && CFLAGS="-I/usr/src/php" docker-php-ext-install xmlreader \
-  && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-  && docker-php-ext-install -j$(nproc) gd \
   && docker-php-ext-enable \
   ${PECL_EXT} \
   && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
@@ -115,7 +114,7 @@ RUN set -ex \
   && mv /usr/local/bin/composer.phar /usr/local/bin/composer \
   && apk del --purge ${BUILD_DEPS}
 
-FROM php:7.3.11-fpm-alpine3.10 AS dev
+FROM php:7.4.2-fpm-alpine3.11 AS dev
 
 LABEL maintainer="momospnr"
 
@@ -157,10 +156,10 @@ RUN set -ex \
   ${APP_DEPS} \
   ${BUILD_DEPS} \
   && gem install mailcatcher etc \
-  && rm -rf /usr/local/lib/php/extensions/no-debug-non-zts-20180731 \
+  && rm -rf /usr/local/lib/php/extensions/no-debug-non-zts-20190902 \
   && apk del --purge ${BUILD_DEPS}
 
-COPY --from=build-env /usr/local/lib/php/extensions/no-debug-non-zts-20180731 /usr/local/lib/php/extensions/no-debug-non-zts-20180731
+COPY --from=build-env /usr/local/lib/php/extensions/no-debug-non-zts-20190902 /usr/local/lib/php/extensions/no-debug-non-zts-20190902
 COPY --from=build-env /usr/local/etc/php/conf.d/* /usr/local/etc/php/conf.d/
 COPY --from=build-env /usr/local/bin/composer /usr/local/bin/composer
 COPY --from=build-env /usr/local/bin/dockerize /usr/local/bin/dockerize
@@ -171,7 +170,7 @@ COPY php.ini-development /usr/local/etc/php/php.ini
 EXPOSE 9000
 CMD ["/usr/local/sbin/php-fpm", "-F"]
 
-FROM php:7.3.11-fpm-alpine3.10 AS prd
+FROM php:7.4.2-fpm-alpine3.11 AS prd
 
 LABEL maintainer="momospnr"
 
@@ -206,9 +205,9 @@ RUN set -ex \
   && apk update \
   && apk add --no-cache \
   ${APP_DEPS} \
-  && rm -rf /usr/local/lib/php/extensions/no-debug-non-zts-20180731
+  && rm -rf /usr/local/lib/php/extensions/no-debug-non-zts-20190902
 
-COPY --from=build-env /usr/local/lib/php/extensions/no-debug-non-zts-20180731 /usr/local/lib/php/extensions/no-debug-non-zts-20180731
+COPY --from=build-env /usr/local/lib/php/extensions/no-debug-non-zts-20190902 /usr/local/lib/php/extensions/no-debug-non-zts-20190902
 COPY --from=build-env /usr/local/etc/php/conf.d/* /usr/local/etc/php/conf.d/
 COPY --from=build-env /usr/local/bin/composer /usr/local/bin/composer
 COPY --from=build-env /etc/localtime /etc/localtime
